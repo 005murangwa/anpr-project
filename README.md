@@ -1,103 +1,150 @@
-# Car Number Plate Recognition System
+🚗 Car Number Plate Recognition System (ANPR)
 
-This is my Y3 project for automatic number plate recognition. I followed the book by Gabriel Baziramwabo about extracting car plates in three steps.
+This project is my Year 3 implementation of an Automatic Number Plate Recognition (ANPR) system. It is based on the structured pipeline described in “Car Number Plate Extraction in Three Steps”, but fully implemented and tested by me using real-world data.
 
-## What it does
+📌 Overview
 
-The program captures video from webcam and reads license plates automatically. It uses OpenCV for detection and Tesseract for reading the text.
+This system captures live video from a webcam and automatically detects, processes, and recognizes vehicle license plates in real time.
 
-### Pipeline
+It is designed to be lightweight and CPU-friendly, using classical computer vision techniques instead of heavy deep learning models.
 
-Camera → Detect plate → Fix angle → Read text → Check format → Confirm → Save to CSV
+⚙️ Pipeline
 
-## Setup
+The system follows this pipeline:
 
-You need Python 3.8+ and a webcam.
+Camera → Detection → Alignment → OCR → Validation → Temporal → Save
 
-```bash
-# make virtual environment
+Explanation:
+
+Detection → Locate the number plate in the frame
+
+Alignment → Correct perspective and orientation
+
+OCR → Extract text using Tesseract
+
+Validation → Ensure the format is valid
+
+Temporal → Confirm consistency across frames
+
+Save → Store results in CSV
+
+🛠️ Installation
+Requirements:
+
+Python 3.8+
+
+Webcam
+
+Setup:
+# create virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
-# install packages
+# install dependencies
 pip install -r requirements.txt
 
-# install tesseract
+# install tesseract OCR
 sudo apt install tesseract-ocr
-```
-
-## How to run
-
-Main program:
-```bash
+▶️ Usage
+Run full system:
 python src/main.py
-```
+Test individual modules:
+python src/camera.py
+python src/detect.py
+python src/align.py
+python src/ocr.py
+python src/validate.py
 
-Test individual parts:
-```bash
-python src/camera.py      # check camera works
-python src/detect.py      # test detection
-python src/align.py       # test alignment
-python src/ocr.py         # test OCR
-python src/validate.py    # test validation
-```
+Press q to exit the camera.
 
-Press q to quit.
-
-## Files
-
-```
+📁 Project Structure
 src/
-  camera.py       - camera test
-  detect.py       - finds plate using contours
-  align.py        - fixes perspective
-  ocr.py          - extracts text
-  validate.py     - checks format
-  temporal.py     - confirms across frames
-  main.py         - runs everything
+  camera.py       # webcam capture
+  detect.py       # plate detection
+  align.py        # perspective correction
+  ocr.py          # text recognition
+  validate.py     # format validation
+  temporal.py     # multi-frame confirmation
+  main.py         # main pipeline controller
 
 data/
-  plates.csv      - saved results
+  plates.csv      # saved plate records
 
-screenshots/      - test images
-```
+screenshots/
+  # real test results captured during experiments
+🔍 Implementation Details
+🔹 Detection
 
-## How it works
+Uses OpenCV contour detection
 
-**Detection** - Uses contour detection to find rectangles that look like plates (aspect ratio 2-8)
+Filters shapes based on aspect ratio (2–8) to identify plate candidates
 
-**Alignment** - Warps the plate to 450x140 pixels so it's straight
+🔹 Alignment
 
-**OCR** - Tesseract reads the characters (only A-Z and 0-9)
+Applies perspective transformation
 
-**Validation** - Checks if format is correct: 3 letters + 3 numbers + 1 letter (like RAD123A)
+Normalizes plate size to 450 × 140 pixels
 
-**Temporal** - Keeps last 5 readings and uses majority vote to confirm
+🔹 OCR
 
-**Save** - Writes to CSV with timestamp, won't save same plate twice within 10 seconds
+Uses Tesseract OCR
 
-## Testing
+Restricted to A–Z and 0–9 to improve accuracy
 
-I tested this on real cars in the school parking. Works best when:
-- 2-5 meters away
-- good lighting
-- plate is clean
-- camera pointing straight at plate
+🔹 Validation
 
-## Problems I had
+Uses pattern matching:
 
-- Sometimes confuses B with 8 or O with 0
-- Doesn't work well in bad lighting
-- Need to be fairly close to the car
-- Extreme angles don't work
+3 letters + 3 numbers + 1 letter
+Example: RAD123A
+🔹 Temporal Confirmation
 
-## Requirements
+Stores last 5 readings
 
-- opencv-python
-- pytesseract  
-- numpy
-- pandas
+Uses majority voting to improve reliability
 
-## Reference
+🔹 Saving
 
-Book: "Car Number Plate Extraction in Three Steps" by Gabriel Baziramwabo
+Saves plate + timestamp to CSV
+
+Prevents duplicates within 10 seconds
+
+🧪 Testing
+
+The system was tested on real vehicles in a parking environment.
+
+Works best when:
+
+Distance: 2–5 meters
+
+Lighting: Good / daylight
+
+Plate condition: Clean and visible
+
+Camera angle: Nearly frontal
+
+⚠️ Limitations
+
+OCR confusion between similar characters (e.g., B ↔ 8, O ↔ 0)
+
+Performance drops in low light conditions
+
+Sensitive to extreme viewing angles
+
+Requires moderate proximity to the vehicle
+
+📦 Dependencies
+
+opencv-python
+
+pytesseract
+
+numpy
+
+pandas
+
+📚 Reference
+
+This project is inspired by the methodology described in:
+
+“Car Number Plate Extraction in Three Steps” – Gabriel Baziramwabo
